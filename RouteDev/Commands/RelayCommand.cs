@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Input;
 
 namespace RouteDev.Commands
 {
-    public class RelayCommand : ICommand
+    public class RelayCommand : RouteDev.Interfaces.ICommand
     {
         private readonly Action<object> _execute;
         private readonly Func<object, bool> _canExecute;

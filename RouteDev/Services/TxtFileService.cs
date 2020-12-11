@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Json;
-using RouteDev.Data;
+﻿using RouteDev.Data;
 using RouteDev.Interfaces;
+using System.Collections.Generic;
+using System.IO;
 
 namespace RouteDev.Services
 {
@@ -37,12 +36,7 @@ namespace RouteDev.Services
 
         public void Save(string path, List<Shop> shopList)
         {
-            //DataContractJsonSerializer jsonFormatter =
-            //    new DataContractJsonSerializer(typeof(List<Shop>));
-            //using (var fs = new FileStream(filename, FileMode.Create))
-            //{
-            //    jsonFormatter.WriteObject(fs, phonesList);
-            //}
+            throw new System.NotImplementedException();
         }
     }
 }

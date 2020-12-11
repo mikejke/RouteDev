@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Text;
-
-namespace RouteDev.Data
+﻿namespace RouteDev.Data
 {
     public class Shop : Cargo
     {
