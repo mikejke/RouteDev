@@ -7,11 +7,11 @@ namespace RouteDev.Services
 {
     public class TxtFileService : IFileService
     {
-        public List<Shop> Open(string path)
+        public List<Shop> Open(string filename)
         {
             var shops = new List<Shop>();
 
-            using (var sr = new StreamReader(path))
+            using (var sr = new StreamReader(filename))
             {
                 var content = sr.ReadToEnd();
                 var text = content.Replace('-', '0').Split('\n');
@@ -34,7 +34,7 @@ namespace RouteDev.Services
             return shops;
         }
 
-        public void Save(string path, List<Shop> shopList)
+        public void Save(string filename, List<Shop> shopList, List<Transport> transportList)
         {
             throw new System.NotImplementedException();
         }

@@ -7,7 +7,7 @@ namespace RouteDev.Interfaces
 {
     public interface IFileService
     {
-        List<Shop> Open(string path);
-        void Save(string path, List<Shop> shopList);
+        List<Shop> Open(string filename);
+        void Save(string filename, List<Shop> shopList, List<Transport> transportList);
     }
 }

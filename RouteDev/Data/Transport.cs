@@ -194,7 +194,7 @@ namespace RouteDev.Data
                     }
                 }
 
-                if (!Overworking && !WillOverwork(closestDistance))
+                if (closestShop != null && !Overworking && !WillOverwork(closestDistance))
                 {
                     Route.Add(closestShop);
                     var products = Products > closestShop.Products

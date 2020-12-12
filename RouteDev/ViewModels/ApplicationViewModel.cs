@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using RouteDev.Services;
 
 namespace RouteDev.ViewModels
 {
@@ -30,7 +31,7 @@ namespace RouteDev.ViewModels
             {
                 return _drawMap ??= new RelayCommand(obj =>
                 {
-                    if (!ShopList.Any()) MessageBox.Show("Таблица магазинов пуста.", "Ошибка", 
+                    if (!ShopList.Any()) MessageBox.Show("В списке нет магазинов.", "Ошибка", 
                         MessageBoxButton.OK, MessageBoxImage.Error);
 
                     for (var i = 0; i < Cars.Count; i++)
@@ -55,6 +56,29 @@ namespace RouteDev.ViewModels
             }
         }
 
+        private RelayCommand saveCommand;
+        public RelayCommand SaveCommand
+        {
+            get
+            {
+                return saveCommand ??= new RelayCommand(obj =>
+                {
+                    try
+                    {
+                        if (_dialogService.SaveFileDialog() == true)
+                        {
+                            _fileService.Save(_dialogService.FilePath, ShopList.ToList(), Cars);
+                            //_dialogService.ShowMessage("Файл сохранен");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _dialogService.ShowMessage(ex.Message);
+                    }
+                });
+            }
+        }
+
         private RelayCommand _openCommand;
         public RelayCommand OpenCommand
         {
@@ -66,17 +90,30 @@ namespace RouteDev.ViewModels
                     {
                         if (_dialogService.OpenFileDialog() == true)
                         {
-                            var phones = _fileService.Open(_dialogService.FilePath);
+                            var shopList = _fileService.Open(_dialogService.FilePath);
                             ShopList.Clear();
-                            foreach (var p in phones)
-                                ShopList.Add(p);
-                            //_dialogService.ShowMessage("Файл открыт");
+                            foreach (var shop in shopList)
+                                ShopList.Add(shop);
                         }
                     }
                     catch (Exception ex)
                     {
                         _dialogService.ShowMessage(ex.Message);
                     }
+                });
+            }
+        }
+
+        private RelayCommand _showExpenses;
+        public RelayCommand ShowExpenses
+        {
+            get
+            {
+                if (Cars.Sum(c => c.Distance) == 0)
+                    return null;
+                return _showExpenses ??= new RelayCommand(obj =>
+                {
+                    MessageBox.Show(string.Join('-', Cars.Select(car => car.Expenses)));
                 });
             }
         }
@@ -93,9 +130,9 @@ namespace RouteDev.ViewModels
 
         public ApplicationViewModel(IDialogService dialogService, IFileService fileService)
         {
-            this._dialogService = dialogService;
             this._fileService = fileService;
-            //moq
+            this._dialogService = dialogService;
+            //adding first three cars..
             ShopList = new ObservableCollection<Shop>();
 
             Cars = new List<Transport>

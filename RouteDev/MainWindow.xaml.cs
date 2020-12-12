@@ -9,8 +9,9 @@ namespace RouteDev
         public MainWindow()
         {
             InitializeComponent();
-            // We use MVVM pattern in this application, which means we are using view model to display bonded with a view data:
-            DataContext = new ApplicationViewModel(new DefaultDialogService(), new TxtFileService());
+            //binding view model to data context:
+            //TODO: also find a way to chose formats
+            DataContext = new ApplicationViewModel(new DefaultDialogService(), new XlsFileService());
         }
     }
 }

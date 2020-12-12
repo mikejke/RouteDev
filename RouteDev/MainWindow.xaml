@@ -48,7 +48,7 @@
         
         <StackPanel Grid.Row="2" Orientation="Horizontal">
             <Button Command="{Binding DrawMap}">Draw</Button>
-            <Button Command="{Binding Expenses}">Expenses</Button>
+            <Button Command="{Binding ShowExpenses}">Expenses</Button>
         </StackPanel>
 
         <StackPanel Grid.Column="2" Grid.Row="1" DataContext="{Binding Selected}">

@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace RouteDev.Commands
 {
-    public class RelayCommand : RouteDev.Interfaces.ICommand
+    public class RelayCommand : ICommand
     {
         private readonly Action<object> _execute;
         private readonly Func<object, bool> _canExecute;

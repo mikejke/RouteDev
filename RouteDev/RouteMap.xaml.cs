@@ -1,26 +1,27 @@
-﻿using System;
+﻿using RouteDev.Data;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using RouteDev.Data;
 
 namespace RouteDev
 {
     /// <summary>
-    /// Логика взаимодействия для RouteMap.xaml
+    /// Route Map draws map on a canvas with routes
     /// </summary>
     public partial class RouteMap : Window
     {
         private const byte Size = 10;
 
+        /// <summary>
+        /// Constructor for RouteMap
+        /// Gets list of shops and a list of cars with pre-calculated routes
+        /// </summary>
+        /// <param name="shopList"></param>
+        /// <param name="cars"></param>
         public RouteMap(IEnumerable<Shop> shopList, List<Transport> cars)
         {
             InitializeComponent();
@@ -77,6 +78,23 @@ namespace RouteDev
 
             Canvas.Children.Add(id);
             Canvas.Children.Add(point);
+        }
+
+        /// <summary>
+        /// Converts canvas to .png image
+        /// </summary>
+        /// <returns></returns>
+        public PngBitmapEncoder ToImage()
+        {
+            //actually, its never used, too bad
+            var bmp = new RenderTargetBitmap((int)Canvas.ActualWidth, (int)Canvas.ActualHeight, 96d, 96d, PixelFormats.Pbgra32);
+            Canvas.Measure(new Size((int)Canvas.ActualWidth, (int)Canvas.ActualHeight));
+            Canvas.Arrange(new Rect(new Size((int)Canvas.ActualWidth, (int)Canvas.ActualHeight)));
+            bmp.Render(Canvas);
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bmp));
+
+            return encoder;
         }
     }
 }

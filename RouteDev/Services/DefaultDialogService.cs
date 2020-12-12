@@ -10,7 +10,10 @@ namespace RouteDev.Services
 
         public bool OpenFileDialog()
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
+            var openFileDialog = new OpenFileDialog 
+            {
+                Filter = "Excel|*.xlsx;*.xls;*.xlsm"
+            };
             if (openFileDialog.ShowDialog() == true)
             {
                 FilePath = openFileDialog.FileName;
@@ -21,7 +24,11 @@ namespace RouteDev.Services
 
         public bool SaveFileDialog()
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = "Excel|*.xlsx;*.xls;*.xlsm",
+                FileName = "output",
+            };
             if (saveFileDialog.ShowDialog() == true)
             {
                 FilePath = saveFileDialog.FileName;
