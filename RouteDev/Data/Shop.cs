@@ -1,4 +1,6 @@
-﻿namespace RouteDev.Data
+﻿using System;
+
+namespace RouteDev.Data
 {
     public class Shop : Cargo
     {
@@ -22,6 +24,16 @@
             Products -= p;
             Chemistry -= c;
             Drinks -= d;
+        }
+
+        public short CalculateDistance(Shop shop)
+        {
+            return (short)(Math.Abs(X - shop.X) + Math.Abs(Y - shop.Y));
+        }
+
+        public short CalculateDistance(uint x, uint y)
+        {
+            return (short)(Math.Abs(X - x) + Math.Abs(Y - y));
         }
     }
 }

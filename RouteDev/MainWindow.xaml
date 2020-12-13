@@ -8,13 +8,16 @@
         Title="MainWindow" Height="350" Width="525">
     <Window.Resources>
         <Style TargetType="TextBlock">
+            <Setter Property="Width" Value ="210"/>
             <Setter Property="FontSize" Value="14" />
         </Style>
         <Style TargetType="TextBox">
+            <Setter Property="Width" Value ="210"/>
             <Setter Property="FontSize" Value="14" />
         </Style>
         <Style TargetType="Button">
-            <Setter Property="Width" Value="40" />
+            <Setter Property="Width" Value="200" />
+            <Setter Property="Height" Value="40" />
             <Setter Property="Margin" Value="5" />
         </Style>
     </Window.Resources>
@@ -26,14 +29,16 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="25" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="0.2*" />
+            <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
+
         <Menu Grid.ColumnSpan="2" >
             <MenuItem Header="Файл">
                 <MenuItem Header="Открыть" Command="{Binding OpenCommand}" />
-                <MenuItem Header="Сохранить" Command="{Binding SaveCommand}" />
+                <MenuItem Header="Сохранить отчет" Command="{Binding SaveCommand}" />
             </MenuItem>
         </Menu>
+
         <ListBox Grid.Row="1" ItemsSource="{Binding ShopList}"
                  SelectedItem="{Binding Selected}">
             <ListBox.ItemTemplate>
@@ -45,11 +50,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        
-        <StackPanel Grid.Row="2" Orientation="Horizontal">
-            <Button Command="{Binding DrawMap}">Draw</Button>
-            <Button Command="{Binding ShowExpenses}">Expenses</Button>
-        </StackPanel>
+
 
         <StackPanel Grid.Column="2" Grid.Row="1" DataContext="{Binding Selected}">
             <TextBlock Text="Выбранный элемент"  />
@@ -59,6 +60,9 @@
             <TextBox Text="{Binding Chemistry, UpdateSourceTrigger=PropertyChanged}" />
             <TextBlock Text="Напитки" />
             <TextBox Text="{Binding Drinks, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+        <StackPanel Grid.Column="2" Grid.Row="2">
+            <Button Command="{Binding DrawCommand}">Draw</Button>
         </StackPanel>
     </Grid>
 </Window>

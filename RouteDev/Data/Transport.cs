@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using RouteDev.Utils;
 
 namespace RouteDev.Data
 {
@@ -15,7 +16,7 @@ namespace RouteDev.Data
 
         public int Load => Sum;
 
-        public List<Shop> Route { get; set; } = new List<Shop>() { new Shop(0, StorageX, StorageY) };
+        public List<Shop> Route { get; set; } = new List<Shop>() { Constants.Storage };
 
         public override int Products
         {
@@ -108,7 +109,7 @@ namespace RouteDev.Data
             {
                 double expenses = 0;
                 expenses += VarExpenses * Distance;
-                    //Переработка
+                //Переработка
                 if (WorkingHours > AvgWorkTime)
                 {
                     expenses += (WorkingHours - AvgWorkTime) * 15;
@@ -128,11 +129,11 @@ namespace RouteDev.Data
                     expenses += 2 * (90 - Load);
                 }
 
-                return expenses;
+                return expenses + FixedExpenses;
             }
         }
 
-        public bool Overworking => WorkingHours >= AvgWorkTime;
+        public bool Overworking => WorkingHours > AvgWorkTime;
         
 
         public void Unload(int p, int c, int d)
@@ -160,8 +161,7 @@ namespace RouteDev.Data
                 short distance = 0;
                 for (int i = 1; i < Route.Count; i++)
                 {
-                    distance +=
-                        (short) (Math.Abs(Route[i - 1].X - Route[i].X) + (Math.Abs(Route[i - 1].Y - Route[i].Y)));
+                    distance += Route[i - 1].CalculateDistance(Route[i]);
                 }
                 return distance;
             }
@@ -169,7 +169,7 @@ namespace RouteDev.Data
 
         public bool WillOverwork(double distance)
         {
-            return (distance * 3 / 60) + WorkingHours >= AvgWorkTime;
+            return (distance * 3 / 60) + WorkingHours > AvgWorkTime;
         }
 
         public void CalculateRoutes(IEnumerable<Shop> shopList)
@@ -181,22 +181,29 @@ namespace RouteDev.Data
                 var shop1 = Route[index];
                 Shop closestShop = null;
                 short closestDistance = 0;
-                foreach (var shop2 in shopList.Where(x => x.Id != shop1.Id).ToList())
+                foreach (var shop2 in shopList.Where(x => x.Id != shop1.Id && x.AnyNeed()).ToList())
                 {
-                    if (shop2.Products > 0 || shop2.Chemistry > 0 || shop2.Drinks > 0)
+                    var distance = shop1.CalculateDistance(shop2);
+                    if (closestDistance == 0 || closestDistance > distance)
                     {
-                        var distance = (short)(Math.Abs(shop1.X - shop2.X) + Math.Abs(shop1.Y - shop2.Y));
-                        if (closestDistance == 0 || closestDistance > distance)
-                        {
-                            closestDistance = distance;
-                            closestShop = shop2;
-                        }
+                        closestDistance = distance;
+                        closestShop = shop2;
                     }
                 }
 
-                if (closestShop != null && !Overworking && !WillOverwork(closestDistance))
+                if (closestShop != null)
                 {
+                    var distanceToStorage = Constants.Storage.CalculateDistance(closestShop);
+                    if (WillOverwork(distanceToStorage))
+                    {
+                        Route.Remove(Route.Last());
+                        if (Route.Last() != Constants.Storage)
+                            Route.Add(Constants.Storage);
+                        break;
+                    }
+
                     Route.Add(closestShop);
+
                     var products = Products > closestShop.Products
                         ? closestShop.Products
                         : Products;
@@ -210,18 +217,13 @@ namespace RouteDev.Data
                     closestShop.Upload(products, chemistry, drinks);
                 }
 
-                if (AnyEmpty() && !Overworking && shopList.Any(x => !x.AnyEmpty()))
+                if ((!AnyEmpty() || Overworking || !shopList.Any(x => !x.AnyEmpty())) && !Overworking &&
+                    !shopList.All(x => x.AllEmpty())) continue;
                 {
-                    Route.Add(Route.First());
-                    if (!Overworking)
-                        Upload();
-                }
-
-                if (Overworking || shopList.All(x => x.AllEmpty()))
-                {
-                    if (Route.Last().Id != Route.First().Id)
-                        Route.Add(Route.First());
-                    break;
+                    Route.Add(Constants.Storage);
+                    if (Overworking || shopList.All(x => x.AllEmpty()))
+                        break;
+                    Upload();
                 }
             }
         }

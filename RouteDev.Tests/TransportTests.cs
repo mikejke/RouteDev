@@ -1,6 +1,8 @@
 using RouteDev.Data;
 using System;
 using System.Collections.Generic;
+using System.IO.Packaging;
+using RouteDev.Utils;
 using Xunit;
 
 namespace RouteDev.Tests
@@ -48,14 +50,14 @@ namespace RouteDev.Tests
                 Chemistry = 40,
                 Products = 40
             };
-            //shop is close to main storage, which coordinates is 17 , 4
-            var closeShop = new Shop(1, 17, 8)
+            //shop is close to main storage, which coordinates is 17 , 14
+            var closeShop = new Shop(1, 17, 12)
             {
                 Drinks = 20,
                 Chemistry = 20,
                 Products = 20
             };
-            var farShop = new Shop(2, 12, 12)
+            var farShop = new Shop(2, 1, 1)
             {
                 Drinks = 20,
                 Chemistry = 20,
@@ -116,7 +118,7 @@ namespace RouteDev.Tests
             byte x = 20;
             byte y = 10;
 
-            var distance = (short)(Math.Abs(17 - 20) + Math.Abs(4 - 10));
+            var distance = (short)(Math.Abs(Constants.StorageX - 20) + Math.Abs(Constants.StorageY - 10));
 
             var moqCar = new Transport(TransportType.Own)
             {
@@ -149,7 +151,7 @@ namespace RouteDev.Tests
             byte x = 20;
             byte y = 10;
 
-            var distance = (short)(Math.Abs(17 - 20) + Math.Abs(4 - 10));
+            var distance = (short)(Math.Abs(Constants.StorageX - 20) + Math.Abs(Constants.StorageY - 10));
 
             var moqCar = new Transport(TransportType.Own)
             {

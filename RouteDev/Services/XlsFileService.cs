@@ -13,8 +13,6 @@ namespace RouteDev.Services
     /// </summary>
     public class XlsFileService : IFileService
     {
-        private int row;
-
         public List<Shop> Open(string filename)
         {
             var shopList = new List<Shop>();
@@ -68,41 +66,81 @@ namespace RouteDev.Services
                     ws.Cell(1, 7).Value = "Маршрут перевозки";
                     ws.Cell(1, 8).Value = "Затраты";
 
-                    transportList.ForEach(car =>
+                    for(var i = 0; i < transportList.Count; i++)
                     {
-                        var row = transportList.IndexOf(car) + 2;
-                        ws.Cell(this.row, 1).Value = 
-                            this.row;
-                        ws.Cell(this.row, 2).Value = 
-                            car.Type.ToString("F");
-                        ws.Cell(this.row, 3).Value =
-                            car.Capacity.ToString("## 'кг'");
-                        ws.Cell(this.row, 4).Value =
-                            car.Distance.ToString("## 'км'");
-                        ws.Cell(this.row, 5).Value =
-                            car.TotalUploadingTime.ToString("##.## 'часов'");
-                        ws.Cell(this.row, 6).Value =
-                            car.WorkingHours.ToString("## 'часов'");
-                        ws.Cell(this.row, 7).Value =
-                            string.Join(" - ", car.Route.Select(s => s.Id)).Replace("0", "Склад");
-                        ws.Cell(this.row, 8).Value =
-                            car.Expenses.ToString("## 'у.е'");
-                    });
+                        var row = i + 2;
+                        ws.Cell(row, 1).Value = 
+                            i + 1;
+                        ws.Cell(row, 2).Value = 
+                            transportList[i].Type.ToString("F");
+                        ws.Cell(row, 3).Value =
+                            transportList[i].Capacity.ToString("## 'кг'");
+                        ws.Cell(row, 4).Value =
+                            transportList[i].Distance.ToString("## 'км'");
+                        ws.Cell(row, 5).Value =
+                            transportList[i].TotalUploadingTime.ToString("##.## 'часов'");
+                        ws.Cell(row, 6).Value =
+                            transportList[i].WorkingHours.ToString("## 'часов'");
+                        ws.Cell(row, 7).Value =
+                            string.Join(" - ", transportList[i].Route.Select(s => s.Id));
+                        ws.Cell(row, 8).Value =
+                            transportList[i].Expenses.ToString("## 'у.е'");
+                    }
 
                     //итого
-                    ws.Cell(transportList.Count() + 1, 1).Value =
+                    var conclusion = transportList.Count() + 2;
+                    ws.Cell(conclusion, 1).Value =
                         "Итого";
-                    ws.Cell(transportList.Count() + 1, 3).Value =
+                    ws.Cell(conclusion, 3).Value =
                         transportList.Sum(c => c.Capacity).ToString("## 'кг'");
-                    ws.Cell(transportList.Count() + 1, 4).Value =
+                    ws.Cell(conclusion, 4).Value =
                         transportList.Sum(c => c.Distance).ToString("## 'км'");
-                    ws.Cell(transportList.Count() + 1, 5).Value =
+                    ws.Cell(conclusion, 5).Value =
                         transportList.Sum(c => c.TotalUploadingTime).ToString("##.## 'часов'");
-                    ws.Cell(transportList.Count() + 1, 6).Value =
+                    ws.Cell(conclusion, 6).Value =
                         transportList.Sum(c => c.WorkingHours).ToString("## 'часов'");
-                    ws.Cell(transportList.Count() + 1, 8).Value =
+                    ws.Cell(conclusion, 8).Value =
                         transportList.Sum(c => c.Expenses).ToString("## 'у.е'");
 
+                    //Штрафы
+                    //если какой то магазин не получил товаров.
+                    if (shopList.Any(shop => shop.AnyNeed()))
+                    {
+                        var sanctions = conclusion + 1;
+                        ws.Cell(sanctions, 1).Value =
+                            "Штрафы";
+                        sanctions += 1;
+                        ws.Cell(sanctions, 1).Value =
+                            "Магазин";
+                        ws.Cell(sanctions, 1).Value =
+                            "Необходимые товары";
+                        ws.Cell(sanctions, 1).Value =
+                            "Сумма штрафа";
+                        sanctions += 1;
+                        foreach (var shop in shopList.Where(s => s.AnyNeed()))
+                        {
+                            ws.Cell(sanctions, 1).Value =
+                                shop.Title;
+                            ws.Cell(sanctions, 2).Value =
+                                $"{shop.Products} - {shop.Chemistry} - {shop.Drinks}";
+                            ws.Cell(sanctions, 3).Value =
+                                shop.Sum * 3;
+                        }
+
+                        sanctions += 1;
+                        var products = shopList.Where(shop => shop.AnyNeed()).Select(s => s.Products).Sum();
+                        var chemistry = shopList.Where(shop => shop.AnyNeed()).Select(s => s.Chemistry).Sum();
+                        var drinks = shopList.Where(shop => shop.AnyNeed()).Select(s => s.Drinks).Sum();
+                        ws.Cell(sanctions, 1).Value =
+                            "Итого";
+                        ws.Cell(sanctions, 1).Value =
+                            $"{products} - {chemistry} - {drinks}";
+                        ws.Cell(sanctions, 1).Value =
+                            shopList.Where(shop => shop.AnyNeed()).Select(s => s.Sum).Sum() * 3;
+                    }
+
+
+                    ws.Columns().AdjustToContents();
                     //TODO: add a image of map to xls sheet
 
                     using (var fs = new FileStream(filename, FileMode.Create))

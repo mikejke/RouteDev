@@ -18,18 +18,16 @@ namespace RouteDev.ViewModels
         private readonly IDialogService _dialogService;
 
         private Cargo _selected;
-        private const int StorageX = 17;
-        private const int StorageY = 14;
         public ObservableCollection<Shop> ShopList { get; set; }
         public List<Transport> Cars { get; set; }
 
 
-        private RelayCommand _drawMap;
-        public RelayCommand DrawMap
+        private RelayCommand _drawCommand;
+        public RelayCommand DrawCommand
         {
             get
             {
-                return _drawMap ??= new RelayCommand(obj =>
+                return _drawCommand ??= new RelayCommand(obj =>
                 {
                     if (!ShopList.Any()) MessageBox.Show("В списке нет магазинов.", "Ошибка", 
                         MessageBoxButton.OK, MessageBoxImage.Error);
@@ -37,7 +35,7 @@ namespace RouteDev.ViewModels
                     for (var i = 0; i < Cars.Count; i++)
                     {
                         Cars[i].CalculateRoutes(ShopList);
-                        
+                        //in case if its the last car and any shop still needs something we hire a new one
                         if (i == Cars.Count() - 1 && ShopList.Any(x => x.AnyNeed()))
                         {
                             Cars.Add(
@@ -68,7 +66,6 @@ namespace RouteDev.ViewModels
                         if (_dialogService.SaveFileDialog() == true)
                         {
                             _fileService.Save(_dialogService.FilePath, ShopList.ToList(), Cars);
-                            //_dialogService.ShowMessage("Файл сохранен");
                         }
                     }
                     catch (Exception ex)

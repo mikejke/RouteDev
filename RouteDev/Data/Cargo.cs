@@ -5,9 +5,6 @@ namespace RouteDev.Data
 {
     public abstract class Cargo : INotifyPropertyChanged
     {
-        private protected const byte StorageX = 17;
-        private protected const byte StorageY = 4;
-
         private protected int _products = 0;
         private protected int _chemistry = 0;
         private protected int _drinks = 0;

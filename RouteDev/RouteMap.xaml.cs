@@ -14,7 +14,7 @@ namespace RouteDev
     /// </summary>
     public partial class RouteMap : Window
     {
-        private const byte Size = 10;
+        private const byte Scale = 10;
 
         /// <summary>
         /// Constructor for RouteMap
@@ -28,22 +28,27 @@ namespace RouteDev
 
             foreach (var route in cars.Select(car => car.Route))
             {
-                for (var i = 1; i < route.Count; i++)
+                for (var i = 0; i < route.Count - 1; i++)
                 {
-                    var line = new Line()
-                    {
-                        X1 = route[i - 1].X * Size,
-                        Y1 = route[i - 1].Y * Size,
-                        X2 = route[i].X * Size,
-                        Y2 = route[i].Y * Size,
-                        Stroke = Brushes.Black,
-                        StrokeThickness = 1,
-                    };
-                    Canvas.Children.Add(line);
+                    DrawLineBetween(route[i], route[i + 1]);
                 }
             }
 
             DrawPoints(shopList);
+        }
+
+        private void DrawLineBetween(Shop a, Shop b)
+        {
+            var line = new Line()
+            {
+                X1 = a.X * Scale,
+                Y1 = a.Y * Scale,
+                X2 = b.X * Scale,
+                Y2 = b.Y * Scale,
+                Stroke = Brushes.Black,
+                StrokeThickness = 1,
+            };
+            Canvas.Children.Add(line);
         }
 
         private void DrawPoints(IEnumerable<Shop> shopList)
@@ -60,12 +65,12 @@ namespace RouteDev
         {
             var point = new Ellipse()
             {
-                Width = Size,
-                Height = Size,
+                Width = Scale,
+                Height = Scale,
                 Fill = color ?? Brushes.Black,
             };
-            Canvas.SetLeft(point, desiredX * Size - (point.Width / 2));
-            Canvas.SetTop(point, desiredY * Size - (point.Height / 2));
+            Canvas.SetLeft(point, desiredX * Scale - (point.Width / 2));
+            Canvas.SetTop(point, desiredY * Scale - (point.Height / 2));
 
             var id = new TextBlock()
             {
@@ -73,8 +78,8 @@ namespace RouteDev
                 Foreground = Brushes.Black
 
             };
-            Canvas.SetLeft(id, desiredX * Size);
-            Canvas.SetTop(id, desiredY * Size - 20);
+            Canvas.SetLeft(id, desiredX * Scale);
+            Canvas.SetTop(id, desiredY * Scale - 20);
 
             Canvas.Children.Add(id);
             Canvas.Children.Add(point);
