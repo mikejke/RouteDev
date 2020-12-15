@@ -35,5 +35,7 @@ namespace RouteDev.Data
         {
             return (short)(Math.Abs(X - x) + Math.Abs(Y - y));
         }
+
+        public bool AnyNeed() => Products != 0 || Chemistry != 0 || Drinks != 0;
     }
 }

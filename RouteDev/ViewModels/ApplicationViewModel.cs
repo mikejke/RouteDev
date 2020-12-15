@@ -36,7 +36,7 @@ namespace RouteDev.ViewModels
                     {
                         Cars[i].CalculateRoutes(ShopList);
                         //in case if its the last car and any shop still needs something we hire a new one
-                        if (i == Cars.Count() - 1 && ShopList.Any(x => x.AnyNeed()))
+                        if (i == Cars.Count - 1 && ShopList.Any(x => x.AnyNeed()))
                         {
                             Cars.Add(
                                 new Transport(TransportType.Hired)
@@ -54,12 +54,12 @@ namespace RouteDev.ViewModels
             }
         }
 
-        private RelayCommand saveCommand;
+        private RelayCommand _saveCommand;
         public RelayCommand SaveCommand
         {
             get
             {
-                return saveCommand ??= new RelayCommand(obj =>
+                return _saveCommand ??= new RelayCommand(obj =>
                 {
                     try
                     {
@@ -87,6 +87,11 @@ namespace RouteDev.ViewModels
                     {
                         if (_dialogService.OpenFileDialog() == true)
                         {
+                         
+                            //clearing lists before input data
+                            ShopList.Clear();
+                            Cars = ClearTransport();
+
                             var shopList = _fileService.Open(_dialogService.FilePath);
                             ShopList.Clear();
                             foreach (var shop in shopList)
@@ -132,7 +137,12 @@ namespace RouteDev.ViewModels
             //adding first three cars..
             ShopList = new ObservableCollection<Shop>();
 
-            Cars = new List<Transport>
+            Cars = ClearTransport();
+        }
+
+        public List<Transport> ClearTransport()
+        {
+            return new List<Transport>
             {
                 new Transport(TransportType.Own)
                 {

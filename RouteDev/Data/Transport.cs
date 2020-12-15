@@ -99,6 +99,8 @@ namespace RouteDev.Data
             }
         }
 
+        //Переменная хранит издержки, если кол-во груза при загрузке меньше 90
+        private double _tmpExpenses = 0;
         /// <summary>
         /// Расчет расходов машины
         /// </summary>
@@ -124,10 +126,7 @@ namespace RouteDev.Data
                     expenses += 15;
                 }
                 //Неполное использование вместимости транспортного средства
-                if (Load < 90)
-                {
-                    expenses += 2 * (90 - Load);
-                }
+                expenses += _tmpExpenses;
 
                 return expenses + FixedExpenses;
             }
@@ -153,78 +152,80 @@ namespace RouteDev.Data
 
             TotalUploadingTime += 0.5;
         }
+        
+        public void Upload(int p, int c, int d)
+        {
+            Products = p;
+            Chemistry = c;
+            Drinks = d;
+
+            if(p + c + d < 90)
+                _tmpExpenses += 2 * (90 - p + c + d);
+
+            TotalUploadingTime += 0.5;
+        }
 
         public short Distance 
         {
             get
             {
                 short distance = 0;
-                for (int i = 1; i < Route.Count; i++)
+                for (var i = 0; i < Route.Count - 1; i++)
                 {
-                    distance += Route[i - 1].CalculateDistance(Route[i]);
+                    distance += Route[i].CalculateDistance(Route[i + 1]);
                 }
                 return distance;
             }
         }
 
-        public bool WillOverwork(double distance)
-        {
-            return (distance * 3 / 60) + WorkingHours > AvgWorkTime;
-        }
+        public bool WillOverwork(double distance) => (distance * 3 / 60) + WorkingHours > AvgWorkTime;
+        public bool WillOverwork(double distance1, double distance2 ) => ((distance1 + distance2) * 3 / 60) + WorkingHours >= MaxWorkTime;
 
         public void CalculateRoutes(IEnumerable<Shop> shopList)
         {
+            shopList = shopList.ToList();
             if (!shopList.Any())
                 return;
             for (var index = 0; index < Route.Count; index++)
             {
-                var shop1 = Route[index];
-                Shop closestShop = null;
-                short closestDistance = 0;
-                foreach (var shop2 in shopList.Where(x => x.Id != shop1.Id && x.AnyNeed()).ToList())
+                var shop = Route[index];
+
+                var closestShop = shopList
+                    .Where(s => s != shop &&
+                                s.AnyNeed() &&
+                                !WillOverwork(shop.CalculateDistance(s)) &&
+                                !WillOverwork(s.CalculateDistance(Constants.Storage), s.CalculateDistance(shop)))
+                    .OrderBy(shop.CalculateDistance).FirstOrDefault();
+
+                if (closestShop == null)
                 {
-                    var distance = shop1.CalculateDistance(shop2);
-                    if (closestDistance == 0 || closestDistance > distance)
-                    {
-                        closestDistance = distance;
-                        closestShop = shop2;
-                    }
+                    if (shop != Constants.Storage)
+                        Route.Add(Constants.Storage);
+                    break;
                 }
 
-                if (closestShop != null)
-                {
-                    var distanceToStorage = Constants.Storage.CalculateDistance(closestShop);
-                    if (WillOverwork(distanceToStorage))
-                    {
-                        Route.Remove(Route.Last());
-                        if (Route.Last() != Constants.Storage)
-                            Route.Add(Constants.Storage);
-                        break;
-                    }
-
-                    Route.Add(closestShop);
-
-                    var products = Products > closestShop.Products
-                        ? closestShop.Products
-                        : Products;
-                    var chemistry = Chemistry > closestShop.Chemistry
-                        ? closestShop.Chemistry
-                        : Chemistry;
-                    var drinks = Drinks > closestShop.Drinks
-                        ? closestShop.Drinks
-                        : Drinks;
-                    Unload(products, chemistry, drinks);
-                    closestShop.Upload(products, chemistry, drinks);
-                }
-
-                if ((!AnyEmpty() || Overworking || !shopList.Any(x => !x.AnyEmpty())) && !Overworking &&
-                    !shopList.All(x => x.AllEmpty())) continue;
+                if (AnyEmpty() && shopList.Any(x => !x.AnyEmpty()) || Overworking)
                 {
                     Route.Add(Constants.Storage);
-                    if (Overworking || shopList.All(x => x.AllEmpty()))
+                    if (Overworking)
                         break;
                     Upload();
+                    continue;
                 }
+
+                Route.Add(closestShop);
+
+                var products = Products > closestShop.Products
+                    ? closestShop.Products
+                    : Products;
+                var chemistry = Chemistry > closestShop.Chemistry
+                    ? closestShop.Chemistry
+                    : Chemistry;
+                var drinks = Drinks > closestShop.Drinks
+                    ? closestShop.Drinks
+                    : Drinks;
+                Unload(products, chemistry, drinks);
+                closestShop.Upload(products, chemistry, drinks);
             }
         }
     }

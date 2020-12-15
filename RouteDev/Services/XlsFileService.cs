@@ -80,7 +80,7 @@ namespace RouteDev.Services
                         ws.Cell(row, 5).Value =
                             transportList[i].TotalUploadingTime.ToString("##.## 'часов'");
                         ws.Cell(row, 6).Value =
-                            transportList[i].WorkingHours.ToString("## 'часов'");
+                            transportList[i].WorkingHours.ToString("##.## 'часов'");
                         ws.Cell(row, 7).Value =
                             string.Join(" - ", transportList[i].Route.Select(s => s.Id));
                         ws.Cell(row, 8).Value =
@@ -98,7 +98,7 @@ namespace RouteDev.Services
                     ws.Cell(conclusion, 5).Value =
                         transportList.Sum(c => c.TotalUploadingTime).ToString("##.## 'часов'");
                     ws.Cell(conclusion, 6).Value =
-                        transportList.Sum(c => c.WorkingHours).ToString("## 'часов'");
+                        transportList.Sum(c => c.WorkingHours).ToString("##.## 'часов'");
                     ws.Cell(conclusion, 8).Value =
                         transportList.Sum(c => c.Expenses).ToString("## 'у.е'");
 

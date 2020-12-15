@@ -42,8 +42,7 @@ namespace RouteDev.Data
 
         public bool AnyEmpty() => Products == 0 || Chemistry == 0 || Drinks == 0;
         public bool AllEmpty() => Products == 0 && Chemistry == 0 && Drinks == 0;
-        public bool AnyNeed() => Products != 0 || Chemistry != 0 || Drinks != 0;
-
+       
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
