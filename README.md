@@ -2,7 +2,8 @@
 This is WPF app built to calculate the transport routes with given input of shops at .xls file format.
 Application was written as a part of the logistic course.
 
-# Given input is looks like 
+# Input
+Given input is looks like\
 | Shop Id | X coord  | Y coord  | Num of products | Num of Chemestry | Num of Drinks |
 
 # Predefined data
