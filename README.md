@@ -3,8 +3,8 @@ This is WPF app built to calculate the transport routes with given input of shop
 Application was written as a part of the logistic course.
 
 # Given input is looks like 
-| Cell1   | Cell2    | Cell3    | Cell4           | Cell5            | Cell6         |<br/>
-| Shop Id | X coord  | Y coord  | Num of products | Num of Chemestry | Num of Drinks | <br/>
+| Cell1   | Cell2    | Cell3    | Cell4           | Cell5            | Cell6         |\
+| Shop Id | X coord  | Y coord  | Num of products | Num of Chemestry | Num of Drinks |\
 
 # Predefined data
 There are 2 types of transport: 
