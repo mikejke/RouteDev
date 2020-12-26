@@ -7,8 +7,8 @@ Application was written as a part of the logistic course.
 
 # Predefined data
 There are 2 types of transport: 
-  1. Owned type — It has 120 total capacity and has a Fixed Expenses in amount of 10 conditional units (3 max)
-  2. Hired type — It has 150 total capacity and has a Fixed Expenses in amount of 50 conditional units
+  1. Owned type — It has 120 total capacity and a Fixed Expenses in amount of 10 conditional units (3 max)
+  2. Hired type — It has 150 total capacity and a Fixed Expenses in amount of 50 conditional units
 #
 
 #
