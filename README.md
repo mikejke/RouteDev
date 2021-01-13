@@ -11,6 +11,3 @@ There are 2 types of transport:
   1. Owned type — It has 120 total capacity and a Fixed Expenses in amount of 10 conditional units (3 max)
   2. Hired type — It has 150 total capacity and a Fixed Expenses in amount of 50 conditional units
 #
-
-#
-Copyright © 2020 mikejke. All rights reserved.
